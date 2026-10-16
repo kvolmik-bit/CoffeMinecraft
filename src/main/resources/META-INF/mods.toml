@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="coffeeminecraft"
-version="1.0.4"
+version="1.0.5"
 displayName="Coffee Glass"
 authors="kvolmik-bit"
 description='''A decorative 3D coffee glass item. No recipes or gameplay mechanics.'''
