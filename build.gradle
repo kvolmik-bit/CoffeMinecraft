@@ -32,24 +32,18 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.10'
 }
 
-def coffeeMugModelGzip = file('src/model-source/coffee_mug.json.gz')
-def generatedCoffeeMugModel = layout.buildDirectory.file('generated/coffee-mug-resources/assets/coffeeminecraft/models/item/coffee_mug.json')
-sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/coffee-mug-resources'))
+def coffeeMugArchive = file('src/model-source/coffee_mug_square_forge_1.20.1.zip')
+def generatedCoffeeMugResources = layout.buildDirectory.dir('generated/coffee-mug-resources')
+sourceSets.main.resources.srcDir(generatedCoffeeMugResources)
 
-tasks.register('restoreCoffeeMugModel') {
-    inputs.file(coffeeMugModelGzip)
-    outputs.file(generatedCoffeeMugModel)
-    doLast {
-        def destination = generatedCoffeeMugModel.get().asFile
-        destination.parentFile.mkdirs()
-        new java.util.zip.GZIPInputStream(new java.io.FileInputStream(coffeeMugModelGzip)).withCloseable { input ->
-            destination.withOutputStream { output -> input.transferTo(output) }
-        }
-    }
+tasks.register('extractCoffeeMugAssets', Copy) {
+    from(zipTree(coffeeMugArchive))
+    include 'assets/**'
+    into generatedCoffeeMugResources
 }
 
 tasks.named('processResources').configure {
-    dependsOn tasks.named('restoreCoffeeMugModel')
+    dependsOn tasks.named('extractCoffeeMugAssets')
 }
 
 tasks.named('jar', Jar).configure {
