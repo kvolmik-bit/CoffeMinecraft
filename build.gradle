@@ -49,7 +49,7 @@ tasks.register('generateCoffeeTextures') {
     outputs.dir(generatedCoffeeResources)
     doLast {
         File root = generatedCoffeeResources.get().asFile
-        def rgb = { String hex -> new java.awt.Color(Integer.parseInt(hex.substring(1), 16), true) }
+        def rgb = { String hex -> new java.awt.Color(Integer.parseInt(hex.substring(1), 16)) }
         def image = { String path, int size, Closure draw ->
             File file = new File(root, "assets/coffeeminecraft/textures/item/" + path)
             file.parentFile.mkdirs()
