@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="coffeeminecraft"
+version="1.0.0"
+displayName="Coffee Glass"
+authors="kvolmik-bit"
+description='''A decorative 3D coffee glass item. No recipes or gameplay mechanics.'''
+
+[[dependencies.coffeeminecraft]]
+modId="forge"
+mandatory=true
+versionRange="[47.4.10,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.coffeeminecraft]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"

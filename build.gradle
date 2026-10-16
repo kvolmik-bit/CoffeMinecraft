@@ -1,0 +1,120 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+group = 'com.kvolmik.coffeeminecraft'
+version = '1.0.0'
+base { archivesName = 'CoffeMinecraft-Forge-1.20.1' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = true
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            mods { coffeeminecraft { source sourceSets.main } }
+        }
+        client {}
+        server { args '--nogui' }
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.minecraftforge.net/' }
+    mavenCentral()
+}
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.10'
+}
+tasks.named('jar', Jar).configure {
+    manifest.attributes([
+        'Specification-Title': 'coffeeminecraft',
+        'Specification-Vendor': 'kvolmik-bit',
+        'Specification-Version': '1',
+        'Implementation-Title': project.name,
+        'Implementation-Version': project.version
+    ])
+    finalizedBy 'reobfJar'
+}
+
+def generatedCoffeeResources = layout.buildDirectory.dir('generated/coffee/resources')
+sourceSets.main.resources.srcDir(generatedCoffeeResources)
+
+tasks.register('generateCoffeeTextures') {
+    outputs.dir(generatedCoffeeResources)
+    doLast {
+        File root = generatedCoffeeResources.get().asFile
+        def rgb = { String hex -> new java.awt.Color(Integer.parseInt(hex.substring(1), 16)) }
+        def image = { String path, int size, Closure draw ->
+            File file = new File(root, "assets/coffeeminecraft/textures/item/" + path)
+            file.parentFile.mkdirs()
+            def img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+            def g = img.createGraphics()
+            g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
+            g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR)
+            draw.call(g, rgb)
+            g.dispose()
+            javax.imageio.ImageIO.write(img, 'png', file)
+        }
+        def px = { g, c, int x, int y, int w, int h, String color ->
+            g.setColor(c.call(color)); g.fillRect(x, y, w, h)
+        }
+
+        // Cutout-style transparent glass: transparent middle, clear edge highlights.
+        image('coffee_glass_glass.png', 16) { g, c ->
+            px(g,c,3,1,10,1,'#C7E6F5')
+            px(g,c,2,2,1,11,'#A4CADB')
+            px(g,c,3,2,1,8,'#F1FBFF')
+            px(g,c,13,2,1,11,'#82AFC4')
+            px(g,c,12,3,1,8,'#D6F2FC')
+            px(g,c,3,12,10,1,'#B5D9E8')
+            px(g,c,4,13,8,1,'#7A9FB0')
+            px(g,c,4,3,1,4,'#EAF9FF')
+            px(g,c,11,5,1,5,'#A8D3E5')
+            px(g,c,5,2,2,1,'#FFFFFF')
+            px(g,c,9,13,2,1,'#E0F7FF')
+            px(g,c,3,9,1,2,'#C5E6F3')
+            px(g,c,12,10,1,2,'#D3F0FA')
+        }
+
+        // Dark coffee with a subtle toasted gradient; all pixels are opaque.
+        image('coffee_glass_coffee.png', 16) { g, c ->
+            px(g,c,0,0,16,16,'#4A2415')
+            px(g,c,0,0,16,3,'#30180F')
+            px(g,c,0,3,16,4,'#5B2E1B')
+            px(g,c,0,7,16,5,'#6D371F')
+            px(g,c,0,12,16,4,'#3E1F14')
+            px(g,c,1,2,4,1,'#75452A')
+            px(g,c,7,4,3,1,'#875334')
+            px(g,c,3,8,2,2,'#7D462A')
+            px(g,c,11,10,3,1,'#8D5737')
+            px(g,c,6,13,4,1,'#512718')
+            px(g,c,13,5,2,1,'#482214')
+            px(g,c,1,14,3,1,'#2E170F')
+        }
+
+        // Crema foam with a tiny latte-art spiral. No overlapping polygons / transparency sorting.
+        image('coffee_glass_foam.png', 16) { g, c ->
+            px(g,c,0,0,16,16,'#B87943')
+            px(g,c,1,1,14,14,'#DDA96D')
+            px(g,c,2,2,12,12,'#F0D3A0')
+            px(g,c,4,3,8,2,'#FFF0CC')
+            px(g,c,3,5,2,5,'#FFF0CC')
+            px(g,c,5,5,6,2,'#E5B978')
+            px(g,c,9,7,3,3,'#FFF0CC')
+            px(g,c,5,9,4,2,'#FFF0CC')
+            px(g,c,6,6,2,2,'#B87943')
+            px(g,c,4,12,8,1,'#C18B51')
+            px(g,c,12,3,1,3,'#D29A5C')
+            px(g,c,2,11,1,2,'#D29A5C')
+        }
+    }
+}
+tasks.named('processResources').configure {
+    dependsOn tasks.named('generateCoffeeTextures')
+}
