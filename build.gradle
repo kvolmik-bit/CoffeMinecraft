@@ -49,69 +49,86 @@ tasks.register('generateCoffeeTextures') {
     outputs.dir(generatedCoffeeResources)
     doLast {
         File root = generatedCoffeeResources.get().asFile
-        def rgb = { String hex -> new java.awt.Color(Integer.parseInt(hex.substring(1), 16)) }
-        def image = { String path, int size, Closure draw ->
-            File file = new File(root, "assets/coffeeminecraft/textures/item/" + path)
+        def rgba = { String hex, int alpha ->
+            int rgb = Integer.parseInt(hex.substring(1), 16)
+            new java.awt.Color((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255, alpha)
+        }
+        def create = { String name, int size, Closure painter ->
+            File file = new File(root, "assets/coffeeminecraft/textures/item/" + name)
             file.parentFile.mkdirs()
             def img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
             def g = img.createGraphics()
             g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_OFF)
             g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR)
-            draw.call(g, rgb)
+            painter.call(g, rgba, size)
             g.dispose()
             javax.imageio.ImageIO.write(img, 'png', file)
         }
-        def px = { g, c, int x, int y, int w, int h, String color ->
-            g.setColor(c.call(color)); g.fillRect(x, y, w, h)
+        def px = { g, c, int x, int y, int w, int h, String hex, int a=255 ->
+            g.setColor(c.call(hex, a)); g.fillRect(x, y, w, h)
         }
 
-        // Cutout-style transparent glass: transparent middle, clear edge highlights.
-        image('coffee_glass_glass.png', 16) { g, c ->
-            px(g,c,3,1,10,1,'#C7E6F5')
-            px(g,c,2,2,1,11,'#A4CADB')
-            px(g,c,3,2,1,8,'#F1FBFF')
-            px(g,c,13,2,1,11,'#82AFC4')
-            px(g,c,12,3,1,8,'#D6F2FC')
-            px(g,c,3,12,10,1,'#B5D9E8')
-            px(g,c,4,13,8,1,'#7A9FB0')
-            px(g,c,4,3,1,4,'#EAF9FF')
-            px(g,c,11,5,1,5,'#A8D3E5')
-            px(g,c,5,2,2,1,'#FFFFFF')
-            px(g,c,9,13,2,1,'#E0F7FF')
-            px(g,c,3,9,1,2,'#C5E6F3')
-            px(g,c,12,10,1,2,'#D3F0FA')
+        // Mostly transparent glass with deliberate bright edge reflections.
+        // Transparent pixels are empty; there are no stacked opaque panels.
+        create('coffee_glass_glass.png', 32) { g, c, size ->
+            px(g,c,4,2,24,2,'#F2FCFF',255)
+            px(g,c,3,4,26,1,'#C7EAF8',255)
+            px(g,c,2,5,2,20,'#B7E4F5',220)
+            px(g,c,4,6,1,15,'#F4FDFF',255)
+            px(g,c,5,6,1,7,'#FFFFFF',180)
+            px(g,c,28,5,2,20,'#85BFD9',230)
+            px(g,c,26,7,1,15,'#C4ECFA',190)
+            px(g,c,4,21,1,4,'#D4F2FC',230)
+            px(g,c,5,25,22,1,'#C8ECF8',240)
+            px(g,c,4,26,24,2,'#E7F9FF',255)
+            px(g,c,6,28,20,1,'#7FB2C8',255)
+            // Little glints make the glass readable from inventory scale.
+            px(g,c,8,8,2,1,'#FFFFFF',255)
+            px(g,c,8,9,1,3,'#E9FAFF',230)
+            px(g,c,23,13,2,1,'#FFFFFF',220)
+            px(g,c,23,14,1,3,'#DFF6FF',220)
+            px(g,c,11,23,3,1,'#FFFFFF',200)
         }
 
-        // Dark coffee with a subtle toasted gradient; all pixels are opaque.
-        image('coffee_glass_coffee.png', 16) { g, c ->
-            px(g,c,0,0,16,16,'#4A2415')
-            px(g,c,0,0,16,3,'#30180F')
-            px(g,c,0,3,16,4,'#5B2E1B')
-            px(g,c,0,7,16,5,'#6D371F')
-            px(g,c,0,12,16,4,'#3E1F14')
-            px(g,c,1,2,4,1,'#75452A')
-            px(g,c,7,4,3,1,'#875334')
-            px(g,c,3,8,2,2,'#7D462A')
-            px(g,c,11,10,3,1,'#8D5737')
-            px(g,c,6,13,4,1,'#512718')
-            px(g,c,13,5,2,1,'#482214')
-            px(g,c,1,14,3,1,'#2E170F')
+        // A deep espresso texture for the liquid column.
+        create('coffee_glass_coffee.png', 32) { g, c, size ->
+            px(g,c,0,0,32,32,'#4A2415',255)
+            px(g,c,0,0,32,4,'#2C150E',255)
+            px(g,c,0,4,32,7,'#5B2E1B',255)
+            px(g,c,0,11,32,8,'#6D3821',255)
+            px(g,c,0,19,32,7,'#512818',255)
+            px(g,c,0,26,32,6,'#381A11',255)
+            px(g,c,3,5,7,2,'#76452A',255)
+            px(g,c,17,8,4,1,'#825033',255)
+            px(g,c,9,13,3,2,'#8A5735',255)
+            px(g,c,23,17,5,1,'#8C5632',255)
+            px(g,c,5,22,6,2,'#482214',255)
+            px(g,c,18,25,7,1,'#2D150D',255)
         }
 
-        // Crema foam with a tiny latte-art spiral. No overlapping polygons / transparency sorting.
-        image('coffee_glass_foam.png', 16) { g, c ->
-            px(g,c,0,0,16,16,'#B87943')
-            px(g,c,1,1,14,14,'#DDA96D')
-            px(g,c,2,2,12,12,'#F0D3A0')
-            px(g,c,4,3,8,2,'#FFF0CC')
-            px(g,c,3,5,2,5,'#FFF0CC')
-            px(g,c,5,5,6,2,'#E5B978')
-            px(g,c,9,7,3,3,'#FFF0CC')
-            px(g,c,5,9,4,2,'#FFF0CC')
-            px(g,c,6,6,2,2,'#B87943')
-            px(g,c,4,12,8,1,'#C18B51')
-            px(g,c,12,3,1,3,'#D29A5C')
-            px(g,c,2,11,1,2,'#D29A5C')
+        // A visible, rounded-looking crema top with a simple latte-art spiral.
+        // Transparent cut corners shape the top surface into an octagon.
+        create('coffee_glass_foam.png', 32) { g, c, size ->
+            px(g,c,8,2,16,3,'#DDA96D',255)
+            px(g,c,4,5,24,3,'#DDA96D',255)
+            px(g,c,2,8,28,16,'#DDA96D',255)
+            px(g,c,4,24,24,3,'#DDA96D',255)
+            px(g,c,8,27,16,3,'#DDA96D',255)
+            px(g,c,7,5,18,3,'#F0D3A0',255)
+            px(g,c,4,8,24,16,'#F0D3A0',255)
+            px(g,c,7,24,18,3,'#F0D3A0',255)
+            // crema art: an ivory spiral / leaf, not random speckles
+            px(g,c,12,7,8,2,'#FFF0CC',255)
+            px(g,c,9,9,5,3,'#FFF0CC',255)
+            px(g,c,14,9,7,3,'#B87943',255)
+            px(g,c,18,12,5,3,'#FFF0CC',255)
+            px(g,c,14,14,8,3,'#FFF0CC',255)
+            px(g,c,9,16,6,3,'#FFF0CC',255)
+            px(g,c,13,19,8,2,'#FFF0CC',255)
+            px(g,c,6,12,3,4,'#D19B5B',255)
+            px(g,c,22,17,3,3,'#D19B5B',255)
+            px(g,c,11,11,3,3,'#E7B979',255)
+            px(g,c,17,16,3,2,'#E7B979',255)
         }
     }
 }
