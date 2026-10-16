@@ -15,15 +15,8 @@ public final class ModTabs {
     public static final RegistryObject<CreativeModeTab> COFFEE = TABS.register("coffee",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.coffeeminecraft"))
-                    .icon(() -> new ItemStack(ModItems.COFFEE_GLASS.get()))
-                    .displayItems((parameters, output) -> {
-                        output.accept(ModItems.COFFEE_GLASS.get());
-                        output.accept(ModItems.COLORFUL_CUP_BLUE.get());
-                        output.accept(ModItems.COLORFUL_CUP_RED.get());
-                        output.accept(ModItems.COLORFUL_CUP_GREEN.get());
-                        output.accept(ModItems.COFFEE_TO_GO.get());
-                        output.accept(ModItems.TAVERN_MUG.get());
-                    })
+                    .icon(() -> new ItemStack(ModItems.COFFEE_MUG.get()))
+                    .displayItems((parameters, output) -> output.accept(ModItems.COFFEE_MUG.get()))
                     .build());
 
     private ModTabs() {}

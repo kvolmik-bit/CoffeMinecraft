@@ -4,10 +4,10 @@ license="MIT"
 
 [[mods]]
 modId="coffeeminecraft"
-version="1.0.6"
-displayName="Coffee Glass"
+version="1.0.8"
+displayName="Coffee Mug"
 authors="kvolmik-bit"
-description='''A decorative 3D coffee glass item. No recipes or gameplay mechanics.'''
+description='''A decorative 3D coffee mug item. No recipes or gameplay mechanics.'''
 
 [[dependencies.coffeeminecraft]]
 modId="forge"

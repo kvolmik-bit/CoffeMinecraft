@@ -1,9 +1,4 @@
 {
-  "itemGroup.coffeeminecraft": "Coffee Glass",
-  "item.coffeeminecraft.coffee_glass": "Coffee in a Glass",
-  "item.coffeeminecraft.colorful_cup_blue": "Blocky Cup — Blue",
-  "item.coffeeminecraft.colorful_cup_red": "Blocky Cup — Red",
-  "item.coffeeminecraft.colorful_cup_green": "Blocky Cup — Green",
-  "item.coffeeminecraft.coffee_to_go": "Coffee To-Go",
-  "item.coffeeminecraft.tavern_mug": "Tavern Mug"
+  "itemGroup.coffeeminecraft": "Coffee",
+  "item.coffeeminecraft.coffee_mug": "Coffee Mug"
 }

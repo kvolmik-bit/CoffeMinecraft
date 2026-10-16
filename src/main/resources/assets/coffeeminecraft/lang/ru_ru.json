@@ -1,9 +1,4 @@
 {
   "itemGroup.coffeeminecraft": "Кофе",
-  "item.coffeeminecraft.coffee_glass": "Кофе в прозрачном стакане",
-  "item.coffeeminecraft.colorful_cup_blue": "Кубическая кружка — синяя",
-  "item.coffeeminecraft.colorful_cup_red": "Кубическая кружка — красная",
-  "item.coffeeminecraft.colorful_cup_green": "Кубическая кружка — зелёная",
-  "item.coffeeminecraft.coffee_to_go": "Кофе навынос",
-  "item.coffeeminecraft.tavern_mug": "Таверновая кружка"
+  "item.coffeeminecraft.coffee_mug": "Кружка кофе"
 }
